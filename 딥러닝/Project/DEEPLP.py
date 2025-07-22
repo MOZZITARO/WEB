@@ -29,9 +29,13 @@ plt.rcParams["axes.unicode_minus"] = False
 # 숫자가 지수표현식으로 나올 때 지정
 pd.options.display.float_format = "{:.2f}".format
 
+@st.cache_data  # 데이터 로딩 캐싱
+def load_data(file_path):
+    return pd.read_csv(file_path)
+
 # 회귀 (예측 모델)
 # 1. 데이터 불러오기
-file_path = "../dataset/Grocery Price Index Tool.csv"
+file_path = "./dataset/Grocery Price Index Tool.csv"
 data = pd.read_csv(file_path)
 
 print(f"데이터 모양: {data.shape}")
@@ -60,6 +64,14 @@ msno.matrix(data)  # 이 시점에 시각화
 
 # 이상치 처리
 def remove_outliers_zscore(data, threshold=3):
+    z_scores = zscore(data)
+    abs_z_scores = abs(z_scores)
+    filtered_entries = (abs_z_scores < threshold).all(axis=1)
+    return data[filtered_entries]
+
+@st.cache_data  # 이상치 처리 캐싱
+def remove_outliers_zscore(data, threshold=3):
+    from scipy.stats import zscore
     z_scores = zscore(data)
     abs_z_scores = abs(z_scores)
     filtered_entries = (abs_z_scores < threshold).all(axis=1)
@@ -133,6 +145,11 @@ history = model.fit(
     verbose=1,
     shuffle=False,
 )
+
+# 예측 (캐시 적용)
+@st.cache_data  # 예측 결과 캐싱
+def make_predictions(model, X):
+    return model.predict(X)
 
 # 10. 예측
 print("예측 수행...")

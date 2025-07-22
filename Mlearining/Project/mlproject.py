@@ -168,6 +168,7 @@ plt.show()
 # Streamlit 앱
 st.title("습관에 따른 성적 예측 프로그램")
 st.bar_chart(importance.set_index('특성'))
+
 # UI
 study_hour = st.number_input('하루 공부시간', min_value=0.00, max_value=10.00, help="최대 10시간까지 입력하세요")
 social_media = st.number_input('하루 SNS 시간', min_value=0.00, max_value=10.00, help="최대 10시간까지 입력하세요")
